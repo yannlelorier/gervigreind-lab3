@@ -74,6 +74,11 @@ public class SimpleHeuristics implements Heuristics {
 				h += s.dirt.size(); // sucking
 			}
 			h++; // to turn off
+		} else  {
+			h += s.dirt().size() * 50;
+			if(!(s.position.equals(env.home))) {
+				h += 100;
+			}
 		}
 		return h;
 	}
