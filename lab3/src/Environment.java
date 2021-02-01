@@ -131,7 +131,33 @@ public class Environment {
 	 */
 	public State getNextState(State s, Action a) {
 		State succState = s.clone();
-		// TODO: fill out this function
+		if(a == Action.TURN_ON) {
+			succState.turned_on = true;
+		} else if (a == Action.TURN_OFF) {
+			succState.turned_on = false;
+		}
+
+		if(a == Action.TURN_LEFT) {
+			switch(s.orientation) {
+				case 0 -> succState.orientation = 3;
+				case 1 -> succState.orientation = 0;
+				case 2 -> succState.orientation = 1;
+				case 3 -> succState.orientation = 2;
+			}
+		} else if(a == Action.TURN_RIGHT) {
+			switch(s.orientation) {
+				case 0 -> succState.orientation = 1;
+				case 1 -> succState.orientation = 2;
+				case 2 -> succState.orientation = 3;
+				case 3 -> succState.orientation = 0;
+			}
+		} else if(a==Action.GO) {
+				succState.position = s.facingPosition();
+		} else if(a==Action.SUCK) {
+			if(s.dirt.contains(s.position)) {
+				succState.dirt.removeIf(c -> c.equals(s.position));
+			}
+		}
 
 		// System.out.println("move: " + a + " -> next state: " + succState);
 		return succState;

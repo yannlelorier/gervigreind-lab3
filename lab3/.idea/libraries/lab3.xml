@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="lab3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/gamecontroller-gui.jar!/" />
+      <root url="jar://$PROJECT_DIR$/simplegamecontroller.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
