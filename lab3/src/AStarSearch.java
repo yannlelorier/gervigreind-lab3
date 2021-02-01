@@ -25,20 +25,30 @@ public class AStarSearch implements SearchAlgorithm {
         totalNodeExpansions = 0;
         maxFrontierSize = 0;
         frontierList = new ArrayList<Node>();
+        myHashMap = new HashMap<>();
 //        frontierList.add(null);
 
 
-        Node currenctNode = new Node(env.getCurrentState(), Integer.MAX_VALUE);
-        frontierList.add(currenctNode);
+        Node currentNode = new Node(env.getCurrentState(), Integer.MAX_VALUE);
+        frontierList.add(currentNode);
 
 
         // finding best solution
         while (!solutionFound) {
             // find node to expand
-
+            currentNode = findBestNodeInFrontier();
             // expand it
-
+            expandNode(currentNode, env);
             // check if maxFrontierSize is  now larger, if so then update
+            if(currentNode!=null) {
+                if(currentNode.state.dirt.isEmpty()) {
+                    System.out.println("found a solution!!!!!");
+                    solutionFound = true;
+                    solutionNode = currentNode;
+                }
+            }
+
+            System.out.println(frontierList.size());
 
 
 
@@ -47,12 +57,34 @@ public class AStarSearch implements SearchAlgorithm {
 
     private Node findBestNodeInFrontier() {
         // check if null or empty frontierList
+        /*if(frontierList.isEmpty()) {
+            return null;
+        } */
         // iterate through the frontier list and find the best evaluation
-        return null;
+        int minNumberOfSteps = Integer.MAX_VALUE;
+        Node bestNode = null;
+        for (Node n : frontierList) {
+            if(heuristics.eval(n.state) < minNumberOfSteps) {
+                bestNode = n;
+            }
+        }
+        return bestNode;
     }
 
-    private void expandNode(Node n) {
+    private void expandNode(Node n, Environment env) {
         // check if null
+        if(n != null) {
+            List<Action> moves = env.legalMoves(n.state);
+            for (Action a : moves) {
+                if(!checkIfStateExistsIfSoAddIt(env.getNextState(n.state, a))) {
+                    Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)); //
+                    frontierList.add(newNode);
+                }
+
+            }
+            frontierList.remove(n);
+
+        }
         // expand it for each move that we can do
         // check if the new state already exists, check the cost and decide to go either left or right
 //        checkIfStateExistsIfSoAddIt(n.state);
@@ -62,12 +94,21 @@ public class AStarSearch implements SearchAlgorithm {
 
     private boolean checkIfStateExistsIfSoAddIt(State s) {
         // check if we already have this state inside the hasshmap
-
+        System.out.println("-------------");
+        System.out.println(s);
+        System.out.println("-------------");
+        int hash = s.hashCode();
+        if(!myHashMap.containsKey(hash)) {
+            ArrayList<State> states= new ArrayList<>();
+            states.add(s);
+            myHashMap.put(hash, states);
+            return false;
+        }
         // if not then add it
 
         // if so we do not add it
 
-        return false;
+        return true;
     }
 
     @Override
