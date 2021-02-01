@@ -72,7 +72,7 @@ public class AStarSearch implements SearchAlgorithm {
 
     @Override
     public List<Action> getPlan() {
-        List<Action> toRet = solutionFound.getPlan();
+        List<Action> toRet = solutionNode.getPlan();
         if(toRet != null && !toRet.isEmpty()){
             return toRet;
         }
