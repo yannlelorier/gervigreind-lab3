@@ -39,24 +39,50 @@ With an environment of width $W$, length $L$, and $D$ dirty spots
 
 Assuming that the dimensions are big enough to have many possible states compared to the obstacles:
 
-we can begin by multiplying:
+We can begin by getting the total surface area, times the number of possibilities of facing one cardinal point (4). This represents any place where the agent can be where there is no dirt. Now, we need to take into consideration the dirt spots, which are a state of their own:
 $$
-W \times D
-$$
-Then, we need to add the possible orientations of the robot (N, E, S, W):
-$$
-W \times L \times 4
-$$
-Now, we have to consider the dirt spots:
-$$
-S_S = W \times L \times 4+D
+\begin{align}
+S_S &= (W \times L) \times 4 +D\times 4\\
+	&= 4WL+4D\\
+	&= 4(WL+D)
+\end{align}
 $$
 
 ***
 
 ## 4. Comparison of estimates
 
+<u>**Depth-First Search**</u>:
 
+- Completeness: This algorithm is not complete
+- Optimality: It is not always optimal
+- Space and Time complexity:
+  - Time: $O(3^m)$
+  - Space: $O(3m)$
+
+In order to make it complete, we must discard the nodes we've already visited.
+
+<u>**Breadth-First Search**</u>:
+
+- Completeness: This algorithm is by definition complete. As long as a solution exists, the algorithm will return it.
+- Optimality: This algorithm is optimal, because since it expands every node, it will find the shortest solution (if it $\exists$)
+- Space and Time complexity: 
+  - Time: $O(3^d)$ where $N$ is the set of all nodes.
+  - Space: $\mid N\mid = 4(WL+D)$ again since all of the vertices must be remembered (worst case)
+
+<u>**Uniform-Cost Search**</u>:
+
+- Completeness: It is complete if the solution exists
+- Optimality: It is optimal as it always selects the path with the lowest cost.
+- Space and Time complexity:
+  - Time: 
+  - Space:
+
+**<u>A* Search</u>**:
+
+- Completeness: It is complete
+- Optimality: It is optimal
+- Space and Time complexity:
 
 ***
 
