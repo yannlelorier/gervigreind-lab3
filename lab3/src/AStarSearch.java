@@ -34,7 +34,7 @@ public class AStarSearch implements SearchAlgorithm {
 
         // finding best solution
         while (!solutionFound) {
-            // find node to expand
+            //TODO find node to expand
 
             // expand it
 
@@ -47,8 +47,21 @@ public class AStarSearch implements SearchAlgorithm {
 
     private Node findBestNodeInFrontier() {
         // check if null or empty frontierList
-        // iterate through the frontier list and find the best evaluation
-        return null;
+        if (frontierList == null || frontierList.isEmpty()) {
+            return null;
+        }else {
+            // iterate through the frontier list and find the best evaluation
+            int mini = 0;
+            int thisNodeEval = 0;
+            for (int i=0; i<frontierList.size(); i++) {
+                thisNodeEval = frontierList.get(i).evaluation;
+                if (frontierList.get(mini).evaluation > thisNodeEval) {
+                    mini = i;
+                }
+
+            }
+            return frontierList.get(mini);
+        }
     }
 
     private void expandNode(Node n) {
@@ -72,7 +85,7 @@ public class AStarSearch implements SearchAlgorithm {
 
     @Override
     public List<Action> getPlan() {
-        List<Action> toRet = solutionFound.getPlan();
+        List<Action> toRet = solutionNode.getPlan();
         if(toRet != null && !toRet.isEmpty()){
             return toRet;
         }
