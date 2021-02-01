@@ -24,12 +24,13 @@ public class AStarSearch implements SearchAlgorithm {
         solutionFound = false;
         totalNodeExpansions = 0;
         maxFrontierSize = 0;
+        solutionNode = null;
         frontierList = new ArrayList<Node>();
 //        frontierList.add(null);
 
 
-        Node currenctNode = new Node(env.getCurrentState(), Integer.MAX_VALUE);
-        frontierList.add(currenctNode);
+        Node currentNode = new Node(env.getCurrentState(), Integer.MAX_VALUE);
+        frontierList.add(currentNode);
 
 
         // finding best solution
@@ -39,9 +40,6 @@ public class AStarSearch implements SearchAlgorithm {
             // expand it
 
             // check if maxFrontierSize is  now larger, if so then update
-
-
-
         }
     }
 
