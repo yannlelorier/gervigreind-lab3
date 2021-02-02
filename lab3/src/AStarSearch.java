@@ -1,11 +1,13 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class AStarSearch implements SearchAlgorithm {
 
     private Heuristics heuristics;
     private HashMap<Integer, ArrayList<State>> myHashMap;
+    private HashSet<State> myHashSet;
 
     public AStarSearch(Heuristics h) {
         this.heuristics = h;
@@ -26,10 +28,11 @@ public class AStarSearch implements SearchAlgorithm {
         maxFrontierSize = 0;
         frontierList = new ArrayList<Node>();
         myHashMap = new HashMap<>();
+        myHashSet = new HashSet<>();
 //        frontierList.add(null);
 
 
-        Node currentNode = new Node(env.getCurrentState(), Integer.MAX_VALUE);
+        /*Node currentNode = new Node(env.getCurrentState(), heuristics.eval(env.getCurrentState()));
         frontierList.add(currentNode);
 
 
@@ -41,19 +44,47 @@ public class AStarSearch implements SearchAlgorithm {
             expandNode(currentNode, env);
             // check if maxFrontierSize is  now larger, if so then update
             if(currentNode!=null) {
-                if(currentNode.state.dirt.isEmpty()) {
+                if(currentNode.state.dirt.isEmpty() && currentNode.state.position.x == 1 && currentNode.state.position.y == 1) {
                     System.out.println("found a solution!!!!!");
                     solutionFound = true;
+
                     solutionNode = currentNode;
                 }
             }
 
             System.out.println(frontierList.size());
 
+            } */
+
+        Node currentNode = new Node(env.getCurrentState(), heuristics.eval(env.getCurrentState())); //the val represent the cost until then
+        frontierList = new ArrayList<Node>();
+
+        frontierList.add(currentNode);
 
 
+        while(!solutionFound) {
+            Node nextNode = findBestNodeInFrontier();
+            // System.out.println(frontierList);
+            // if (counter < 6){
+            //     System.out.println("FL: "+ frontierList);
+            //     counter++;
+            // }
+            //find node to expand
+            //expand the note
+            //TODO test this
+            if (nextNode.evaluation == 1 && !nextNode.state.turned_on && nextNode.action == Action.TURN_OFF) {
+                System.out.println("A huebito krnal");
+                solutionFound = true;
+                solutionNode = nextNode;
+                // getPlan();
+                System.out.println("Node expansions: " + totalNodeExpansions + ", Maximum size of the frontier: " + getMaxFrontierSize() + ", Cost of solution: " + getPlanCost());
+            } else {
+                expandNode(nextNode, env);
+
+
+            }
         }
-    }
+        }
 
     private Node findBestNodeInFrontier() {
         // check if null or empty frontierList
@@ -77,12 +108,17 @@ public class AStarSearch implements SearchAlgorithm {
             List<Action> moves = env.legalMoves(n.state);
             for (Action a : moves) {
                 if(!checkIfStateExistsIfSoAddIt(env.getNextState(n.state, a))) {
-                    Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)); //
+                    Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)+n.depth); //
                     frontierList.add(newNode);
+                    totalNodeExpansions++;
                 }
 
             }
             frontierList.remove(n);
+            if (frontierList.size() > maxFrontierSize) {
+                maxFrontierSize = frontierList.size();
+            }
+
 
         }
         // expand it for each move that we can do
@@ -98,10 +134,14 @@ public class AStarSearch implements SearchAlgorithm {
         System.out.println(s);
         System.out.println("-------------");
         int hash = s.hashCode();
-        if(!myHashMap.containsKey(hash)) {
+        /*if(!myHashMap.containsKey(hash)) {
             ArrayList<State> states= new ArrayList<>();
             states.add(s);
             myHashMap.put(hash, states);
+            return false;
+        } */
+        if(!myHashSet.contains(s)) {
+            myHashSet.add(s);
             return false;
         }
         // if not then add it
@@ -114,6 +154,7 @@ public class AStarSearch implements SearchAlgorithm {
     @Override
     public List<Action> getPlan() {
         List<Action> toRet = solutionNode.getPlan();
+        toRet.add(Action.TURN_OFF);
         if(toRet != null && !toRet.isEmpty()){
             return toRet;
         }
