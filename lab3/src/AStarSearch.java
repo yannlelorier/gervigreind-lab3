@@ -33,7 +33,7 @@ public class AStarSearch implements SearchAlgorithm {
 
 		while(!solutionFound) {
             Node nextNode = findBestNodeInFrontier();
-            //System.out.println(frontierList);
+            // System.out.println(frontierList);
             // if (counter < 6){
             //     System.out.println("FL: "+ frontierList);
             //     counter++;
@@ -41,7 +41,7 @@ public class AStarSearch implements SearchAlgorithm {
 			//find node to expand
             //expand the note
             //TODO test this
-			if(nextNode.evaluation == 1 && nextNode.state.turned_on == false && nextNode.action == Action.TURN_OFF && nextNode.state.dirt.isEmpty()){
+			if(nextNode.evaluation == 1 && nextNode.state.turned_on == false && nextNode.action == Action.TURN_OFF){
                 System.out.println("A huebito krnal");
                 solutionFound = true;
 				solutionNode = nextNode;
@@ -90,7 +90,7 @@ public class AStarSearch implements SearchAlgorithm {
         // System.out.println("size FL"+frontierList.size());		
         return frontierList.get(bestIndex);
 		// check if null or empty
-		//itterate throu frontier adn compare the eval function
+		//iterate through frontier and compare the eval function
     }
 
     private void expandNode(Node n, Environment env) {
@@ -101,16 +101,22 @@ public class AStarSearch implements SearchAlgorithm {
             List<Action> moves = env.legalMoves(n.state);
             for (Action a : moves) {
                 // Node(Node parent, State state, Action action, int val)
-                Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)+n.depth);
+                Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state) + n.depth);
                 if(checkIfStateExistsIfSoAddIt(newNode.state)) {
                     frontierList.add(newNode);
-                    System.out.println("Adding " + a);
+                    if (counter < 6) {
+                        System.out.println("Adding node " + newNode);
+                    }
                 }else {
-                    System.out.println("Cannot add " + a);
+                    // System.out.println("Cannot add " + a);
                 }
 
             }
-            frontierList.remove(n);
+            if (counter < 6){
+                System.out.println("Removing node " + n);
+                counter++;
+            }
+            frontierList.remove(n); //here wth is goin on
 
             if (frontierList.size() > maxFrontierSize) {
                 maxFrontierSize = frontierList.size();
@@ -119,7 +125,6 @@ public class AStarSearch implements SearchAlgorithm {
         }
         // expand it for each move that we can do
         // check if the new state already exists, check the cost and decide to go either left or right
-//        checkIfStateExistsIfSoAddIt(n.state);
         // update the frontier, both remove the current node and add the new nodes
 
     }
@@ -131,16 +136,16 @@ public class AStarSearch implements SearchAlgorithm {
 
         if (tList == null){
             tList = new ArrayList<State>();
-            System.out.println("tList is null");
+            // System.out.println("tList is null");
             tList.add(s);
             myHashMap.put(key, tList);
             return true;
         }
         if (tList.contains(s)) {
-            System.out.println("List already has s: "+ s);
+            // System.out.println("List already has s: "+ s);
             return false;
         }else {
-            System.out.println("added state");
+            // System.out.println("added state");
             tList.add(s);
             myHashMap.put(key, tList);
             return true;
