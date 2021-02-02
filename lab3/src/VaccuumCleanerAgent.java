@@ -25,7 +25,9 @@ public class VaccuumCleanerAgent implements Agent {
 		long startTime = System.currentTimeMillis();
 
 		// do the planning and remember the plan
+		System.out.println("Start doSearch...");
 		searchAlgorithm.doSearch(env);
+		System.out.println("finished doSearch()");
 		plan = searchAlgorithm.getPlan();
 		
 		long endTime = System.currentTimeMillis();

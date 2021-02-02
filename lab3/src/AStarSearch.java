@@ -5,7 +5,8 @@ import java.util.List;
 public class AStarSearch implements SearchAlgorithm {
 
     private Heuristics heuristics;
-    private HashMap<Integer, ArrayList<State>> myHashMap;
+    // private HashMap<Integer, ArrayList<State>> myHashMap = new HashMap<Integer, ArrayList<State>>();
+    private HashMap<Integer, State> myHashMap = new HashMap<Integer, State>();
 
     public AStarSearch(Heuristics h) {
         this.heuristics = h;
@@ -14,45 +15,51 @@ public class AStarSearch implements SearchAlgorithm {
     boolean solutionFound = false;
     int totalNodeExpansions = 0;
     int maxFrontierSize = 0;
+    int counter = 0;
     Node solutionNode = null;
+    int tTableSize = 1000;
     private ArrayList<Node> frontierList;
 
 
     @Override
     public void doSearch(Environment env) {
-        heuristics.init(env);
-        solutionFound = false;
-        totalNodeExpansions = 0;
-        maxFrontierSize = 0;
-        frontierList = new ArrayList<Node>();
-        myHashMap = new HashMap<>();
-//        frontierList.add(null);
+        heuristics.init(env); //initialize 
+
+		Node currentNode = new Node(env.getCurrentState(), heuristics.eval(env.getCurrentState())); //the val represent the cost until then
+		frontierList = new ArrayList<Node>();
+		
+		frontierList.add(currentNode);
 
 
-        Node currentNode = new Node(env.getCurrentState(), Integer.MAX_VALUE);
-        frontierList.add(currentNode);
+		while(!solutionFound) {
+            Node nextNode = findBestNodeInFrontier();
+            //System.out.println(frontierList);
+            // if (counter < 6){
+            //     System.out.println("FL: "+ frontierList);
+            //     counter++;
+            // }
+			//find node to expand
+            //expand the note
+            //TODO test this
+			if(nextNode.evaluation == 1 && nextNode.state.turned_on == false && nextNode.action == Action.TURN_OFF && nextNode.state.dirt.isEmpty()){
+                System.out.println("A huebito krnal");
+                solutionFound = true;
+				solutionNode = nextNode;
+				// getPlan();
+				System.out.println("Node expansions: " + totalNodeExpansions + ", Maximum size of the frontier: " + getMaxFrontierSize() + ", Cost of solution: " + getPlanCost());
+			}else{
+				expandNode(nextNode, env);
+			}
+			
+			
+			//check if max frontiersize is now larger
+			//if so update and detect dublicat states (lab2)
 
 
-        // finding best solution
-        while (!solutionFound) {
-            // find node to expand
-            currentNode = findBestNodeInFrontier();
-            // expand it
-            expandNode(currentNode, env);
-            // check if maxFrontierSize is  now larger, if so then update
-            if(currentNode!=null) {
-                if(currentNode.state.dirt.isEmpty()) {
-                    System.out.println("found a solution!!!!!");
-                    solutionFound = true;
-                    solutionNode = currentNode;
-                }
-            }
-
-            System.out.println(frontierList.size());
-
-
-
-        }
+			//expansions
+			//too much: if state is home and no dirts the solfound 
+			// use evaluation function instead --> take into account that all dirts have been removed in the eval func
+		}
     }
 
     private Node findBestNodeInFrontier() {
@@ -61,28 +68,53 @@ public class AStarSearch implements SearchAlgorithm {
             return null;
         } */
         // iterate through the frontier list and find the best evaluation
-        int minNumberOfSteps = Integer.MAX_VALUE;
-        Node bestNode = null;
-        for (Node n : frontierList) {
-            if(heuristics.eval(n.state) < minNumberOfSteps) {
-                bestNode = n;
+        int minEval = Integer.MAX_VALUE;
+
+		int bestIndex = -1;
+        
+        if (!frontierList.isEmpty()) {
+            for (Node n : frontierList) {
+                if (n.evaluation == 1){
+                    if(n.action == Action.TURN_OFF){
+                        return n;
+                    }
+                } else {
+                    if(heuristics.eval(n.state) <= minEval){
+
+                        minEval = heuristics.eval(n.state);
+                        bestIndex = frontierList.indexOf(n);
+                    }
+                }
             }
         }
-        return bestNode;
+        // System.out.println("size FL"+frontierList.size());		
+        return frontierList.get(bestIndex);
+		// check if null or empty
+		//itterate throu frontier adn compare the eval function
     }
 
     private void expandNode(Node n, Environment env) {
         // check if null
+        totalNodeExpansions++;
+
         if(n != null) {
             List<Action> moves = env.legalMoves(n.state);
             for (Action a : moves) {
-                if(!checkIfStateExistsIfSoAddIt(env.getNextState(n.state, a))) {
-                    Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)); //
+                // Node(Node parent, State state, Action action, int val)
+                Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)+n.depth); //
+                if(!checkIfStateExistsIfSoAddIt(newNode.state)) {
                     frontierList.add(newNode);
+                    System.out.println("Adding " + a);
+                }else {
+                    System.out.println("Cannot add " + a);
                 }
 
             }
             frontierList.remove(n);
+
+            if (frontierList.size() > maxFrontierSize) {
+                maxFrontierSize = frontierList.size();
+            }
 
         }
         // expand it for each move that we can do
@@ -93,27 +125,45 @@ public class AStarSearch implements SearchAlgorithm {
     }
 
     private boolean checkIfStateExistsIfSoAddIt(State s) {
-        // check if we already have this state inside the hasshmap
-        System.out.println("-------------");
-        System.out.println(s);
-        System.out.println("-------------");
+
+        // int key = bucketIndex(s.hashCode(), tTableSize);
+        // ArrayList<State> tList = myHashMap.get(key);
+
+        // if (tList == null){
+        //     tList = new ArrayList<State>();
+        //     System.out.println("tList is null");
+        //     tList.add(s);
+        //     myHashMap.put(key, tList);
+        //     return true;
+        // }
+        // if (tList.contains(s)) {
+        //     System.out.println("List already has s: "+ s);
+        //     return false;
+        // }else {
+        //     System.out.println("added state");
+        //     tList.add(s);
+        //     myHashMap.put(key, tList);
+        //     return true;
+        // }
         int hash = s.hashCode();
-        if(!myHashMap.containsKey(hash)) {
-            ArrayList<State> states= new ArrayList<>();
-            states.add(s);
-            myHashMap.put(hash, states);
-            return false;
-        }
-        // if not then add it
 
-        // if so we do not add it
+        if(myHashMap.get(hash) != null){
+			if ((myHashMap.get(hash)).equals(s)){
+                return true;
+			}
+		}	
+        myHashMap.put(hash, s);
+		return false;
+    }
 
-        return true;
+    public static int bucketIndex(int hashCode, int tableSize) {
+        return (hashCode ^ (hashCode >>> 16)) & (tableSize-1);
     }
 
     @Override
     public List<Action> getPlan() {
         List<Action> toRet = solutionNode.getPlan();
+        System.out.println("inside getPlan");
         if(toRet != null && !toRet.isEmpty()){
             return toRet;
         }
