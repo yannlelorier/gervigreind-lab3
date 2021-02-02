@@ -100,10 +100,7 @@ public class AStarSearch implements SearchAlgorithm {
 
     private boolean checkIfStateExistsIfSoAddIt(State s) {
         // check if we already have this state inside the hasshmap
-        System.out.println("-------------");
-        System.out.println(s);
-        System.out.println("-------------");
-        int hash = s.hashCode();
+        //int hash = s.hashCode();
         /*if(!myHashMap.containsKey(hash)) {
             ArrayList<State> states= new ArrayList<>();
             states.add(s);
