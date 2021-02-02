@@ -58,7 +58,7 @@ $$
 - Optimality: It is not always optimal
 - Space and Time complexity:
   - Time: $O(3^m)$
-  - Space: $O(3m)$
+  - Space: $O(3^m)$
 
 In order to make it complete, we must discard the nodes we've already visited.
 
@@ -68,33 +68,39 @@ In order to make it complete, we must discard the nodes we've already visited.
 - Optimality: This algorithm is optimal, because since it expands every node, it will find the shortest solution (if it $\exists$)
 - Space and Time complexity: 
   - Time: $O(3^d)$ where $N$ is the set of all nodes.
-  - Space: $\mid N\mid = 4(WL+D)$ again since all of the vertices must be remembered (worst case)
+  - Space: $O(3^d)$ again since all of the vertices must be remembered (worst case)
 
 <u>**Uniform-Cost Search**</u>:
 
 - Completeness: It is complete if the solution exists
 - Optimality: It is optimal as it always selects the path with the lowest cost.
 - Space and Time complexity:
-  - Time: 
-  - Space:
+  - Time: $O(3^{c/e})$ where $e$ is the minimum cost of an edge and $c$ is the cost to the optimal solution
+  - Space: $O(3^{c/e})$ it is the same as it needs to remember the path to the optimal solution
 
 **<u>A* Search</u>**:
 
 - Completeness: It is complete
 - Optimality: It is optimal
 - Space and Time complexity:
+  - Time: $O(3^d)$ 
+  - Space: $O(3^d)$
+
+It seems like a bad idea to use it. However, when using a good heuristic, these complexities go down.
 
 ***
 
 ## 5. Bonus Points
 
-
+The size of the search tree and the size of the state space differ because the search tree has to take into account all of the possible actions and still expand (even if they are illegal)
 
 ***
 
 ## 6. Admissible heuristic?
 
+Assuming the space has relatively more spaces than obstacles, the heuristic is admissible. *i.e.* we are relaxing the problem.
 
+This is because the problem is discretized, so the Manhattan distance (lateral moves) is the one that is sufficient for this problem.
 
 ***
 
@@ -104,11 +110,11 @@ In order to make it complete, we must discard the nodes we've already visited.
 
 ***
 
-## 8. 25 Bonus points
+## 8. 25 Bonus points (Better heuristic)
 
 
 
 ***
 
-## 9. 20 Bonus Points
+## 9. 20 Bonus Points (Detection of revisited states)
 
