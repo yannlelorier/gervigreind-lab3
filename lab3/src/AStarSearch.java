@@ -5,8 +5,8 @@ import java.util.List;
 public class AStarSearch implements SearchAlgorithm {
 
     private Heuristics heuristics;
-    // private HashMap<Integer, ArrayList<State>> myHashMap = new HashMap<Integer, ArrayList<State>>();
-    private HashMap<Integer, State> myHashMap = new HashMap<Integer, State>();
+    private HashMap<Integer, ArrayList<State>> myHashMap = new HashMap<Integer, ArrayList<State>>();
+    // private HashMap<Integer, State> myHashMap = new HashMap<Integer, State>();
 
     public AStarSearch(Heuristics h) {
         this.heuristics = h;
@@ -101,8 +101,8 @@ public class AStarSearch implements SearchAlgorithm {
             List<Action> moves = env.legalMoves(n.state);
             for (Action a : moves) {
                 // Node(Node parent, State state, Action action, int val)
-                Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)+n.depth); //
-                if(!checkIfStateExistsIfSoAddIt(newNode.state)) {
+                Node newNode = new Node(n, env.getNextState(n.state, a), a, heuristics.eval(n.state)+n.depth);
+                if(checkIfStateExistsIfSoAddIt(newNode.state)) {
                     frontierList.add(newNode);
                     System.out.println("Adding " + a);
                 }else {
@@ -126,34 +126,34 @@ public class AStarSearch implements SearchAlgorithm {
 
     private boolean checkIfStateExistsIfSoAddIt(State s) {
 
-        // int key = bucketIndex(s.hashCode(), tTableSize);
-        // ArrayList<State> tList = myHashMap.get(key);
+        int key = bucketIndex(s.hashCode(), tTableSize);
+        ArrayList<State> tList = myHashMap.get(key);
 
-        // if (tList == null){
-        //     tList = new ArrayList<State>();
-        //     System.out.println("tList is null");
-        //     tList.add(s);
-        //     myHashMap.put(key, tList);
-        //     return true;
-        // }
-        // if (tList.contains(s)) {
-        //     System.out.println("List already has s: "+ s);
-        //     return false;
-        // }else {
-        //     System.out.println("added state");
-        //     tList.add(s);
-        //     myHashMap.put(key, tList);
-        //     return true;
-        // }
-        int hash = s.hashCode();
+        if (tList == null){
+            tList = new ArrayList<State>();
+            System.out.println("tList is null");
+            tList.add(s);
+            myHashMap.put(key, tList);
+            return true;
+        }
+        if (tList.contains(s)) {
+            System.out.println("List already has s: "+ s);
+            return false;
+        }else {
+            System.out.println("added state");
+            tList.add(s);
+            myHashMap.put(key, tList);
+            return true;
+        }
+        // int hash = s.hashCode();
 
-        if(myHashMap.get(hash) != null){
-			if ((myHashMap.get(hash)).equals(s)){
-                return true;
-			}
-		}	
-        myHashMap.put(hash, s);
-		return false;
+        // if(myHashMap.get(hash) != null){
+		// 	if ((myHashMap.get(hash)).equals(s)){
+        //         return true;
+		// 	}
+		// }	
+        // myHashMap.put(hash, s);
+		// return false;
     }
 
     public static int bucketIndex(int hashCode, int tableSize) {
