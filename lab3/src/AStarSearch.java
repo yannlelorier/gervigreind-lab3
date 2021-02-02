@@ -6,7 +6,6 @@ import java.util.List;
 public class AStarSearch implements SearchAlgorithm {
 
     private Heuristics heuristics;
-    private HashMap<Integer, ArrayList<State>> myHashMap;
     private HashSet<State> myHashSet;
 
     public AStarSearch(Heuristics h) {
@@ -18,6 +17,7 @@ public class AStarSearch implements SearchAlgorithm {
     int maxFrontierSize = 0;
     Node solutionNode = null;
     private ArrayList<Node> frontierList;
+    int homeX, homeY;
 
 
     @Override
@@ -27,14 +27,14 @@ public class AStarSearch implements SearchAlgorithm {
         totalNodeExpansions = 0;
         maxFrontierSize = 0;
         frontierList = new ArrayList<Node>();
-        myHashMap = new HashMap<>();
         myHashSet = new HashSet<>();
-//        frontierList.add(null);
 
 
-        /*Node currentNode = new Node(env.getCurrentState(), heuristics.eval(env.getCurrentState()));
+        Node currentNode = new Node(env.getCurrentState(), heuristics.eval(env.getCurrentState()));
         frontierList.add(currentNode);
 
+        homeX = currentNode.state.position.x;
+        homeY = currentNode.state.position.y;
 
         // finding best solution
         while (!solutionFound) {
@@ -44,62 +44,32 @@ public class AStarSearch implements SearchAlgorithm {
             expandNode(currentNode, env);
             // check if maxFrontierSize is  now larger, if so then update
             if(currentNode!=null) {
-                if(currentNode.state.dirt.isEmpty() && currentNode.state.position.x == 1 && currentNode.state.position.y == 1) {
+               if(currentNode.state.dirt.isEmpty() && currentNode.state.position.x == homeX && currentNode.state.position.y == homeY) {
                     System.out.println("found a solution!!!!!");
                     solutionFound = true;
 
                     solutionNode = currentNode;
                 }
             }
-
-            System.out.println(frontierList.size());
-
-            } */
-
-        Node currentNode = new Node(env.getCurrentState(), heuristics.eval(env.getCurrentState())); //the val represent the cost until then
-        frontierList = new ArrayList<Node>();
-
-        frontierList.add(currentNode);
-
-
-        while(!solutionFound) {
-            Node nextNode = findBestNodeInFrontier();
-            // System.out.println(frontierList);
-            // if (counter < 6){
-            //     System.out.println("FL: "+ frontierList);
-            //     counter++;
-            // }
-            //find node to expand
-            //expand the note
-            //TODO test this
-            if (nextNode.evaluation == 1 && !nextNode.state.turned_on && nextNode.action == Action.TURN_OFF) {
-                System.out.println("A huebito krnal");
-                solutionFound = true;
-                solutionNode = nextNode;
-                // getPlan();
-                System.out.println("Node expansions: " + totalNodeExpansions + ", Maximum size of the frontier: " + getMaxFrontierSize() + ", Cost of solution: " + getPlanCost());
-            } else {
-                expandNode(nextNode, env);
-
-
             }
-        }
         }
 
     private Node findBestNodeInFrontier() {
-        // check if null or empty frontierList
-        /*if(frontierList.isEmpty()) {
-            return null;
-        } */
-        // iterate through the frontier list and find the best evaluation
-        int minNumberOfSteps = Integer.MAX_VALUE;
-        Node bestNode = null;
+        int minEval = 5000;
+
+        int indexMinEval = 0;
+
         for (Node n : frontierList) {
-            if(heuristics.eval(n.state) < minNumberOfSteps) {
-                bestNode = n;
+            if (n != null) {
+                if (heuristics.eval(n.state) <= minEval) {
+
+                    minEval = heuristics.eval(n.state);
+                    indexMinEval = frontierList.indexOf(n);
+                }
             }
         }
-        return bestNode;
+        return frontierList.get(indexMinEval);
+
     }
 
     private void expandNode(Node n, Environment env) {
@@ -144,9 +114,6 @@ public class AStarSearch implements SearchAlgorithm {
             myHashSet.add(s);
             return false;
         }
-        // if not then add it
-
-        // if so we do not add it
 
         return true;
     }
